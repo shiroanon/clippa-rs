@@ -1,52 +1,28 @@
-# This is an example PKGBUILD file. Use this as a start to creating your own,
-# and remove these comments. For more information, see 'man PKGBUILD'.
-# NOTE: Please fill out the license field for your package! If it is unknown,
-# then please put 'unknown'.
-
-# Maintainer: Your Name <youremail@domain.com>
-pkgname=NAME
-pkgver=VERSION
+# Maintainer: shiro shiroanony@gmail.com
+pkgname=clippa-rs
+pkgver=0.1.1
 pkgrel=1
-epoch=
-pkgdesc=""
-arch=()
-url=""
-license=('GPL')
-groups=()
-depends=()
-makedepends=()
-checkdepends=()
-optdepends=()
-provides=()
-conflicts=()
-replaces=()
-backup=()
-options=()
-install=
-changelog=
-source=("$pkgname-$pkgver.tar.gz"
-        "$pkgname-$pkgver.patch")
-noextract=()
-sha256sums=()
-validpgpkeys=()
-
-prepare() {
-	cd "$pkgname-$pkgver"
-	patch -p1 -i "$srcdir/$pkgname-$pkgver.patch"
-}
+pkgdesc="A clipboard manager tui/service for wayland based compositors written in rust"
+arch=(x86_64 i686)
+url="https://github.com/shiroanon/clippa-rs"
+license=('MIT')
+depends=(gcc-libs libgcc_s.so
+  glibc wl-clipboard)
+makedepends=(cargo git)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/shiroanon/clippa-rs/archive/v$pkgver.tar.gz"
+  "clippa-harvest.service::https://raw.githubusercontent.com/shiroanon/clippa-rs/v$pkgver/clippa-harvest.service")
+sha256sums=('SKIP' 'SKIP')
 
 build() {
-	cd "$pkgname-$pkgver"
-	./configure --prefix=/usr
-	make
-}
-
-check() {
-	cd "$pkgname-$pkgver"
-	make -k check
+  cd "$pkgname-$pkgver"
+  cargo build --release --locked
 }
 
 package() {
-	cd "$pkgname-$pkgver"
-	make DESTDIR="$pkgdir/" install
+  cd "$pkgname-$pkgver"
+
+  install -Dm755 "target/release/clippa-harvest" "$pkgdir/usr/bin/${pkgname}"
+  install -Dm755 "target/release/clippa-manage" "$pkgdir/usr/bin/${pkgname}"
+  install -Dm644 "$srcdir/clippa-harvest.service" "$pkgdir/usr/lib/systemd/user/clippa-harvest.service"
+
 }
