@@ -190,15 +190,15 @@ fn main() -> Result<()> {
                         KeyCode::Char('q') => app.should_quit = true,
                         KeyCode::Char('j') | KeyCode::Down => app.next(),
                         KeyCode::Char('k') | KeyCode::Up => app.previous(),
-                        KeyCode::Enter | KeyCode::Char('l') if app.mode == Mode::BrowsingFiles => {
+                        KeyCode::Enter if app.mode == Mode::BrowsingFiles => {
                             if !app.links.is_empty() {
                                 app.mode = Mode::BrowsingLinks;
                             }
                         }
-                        KeyCode::Esc | KeyCode::Char('h') if app.mode == Mode::BrowsingLinks => {
+                        KeyCode::Char('z') if app.mode == Mode::BrowsingLinks => {
                             app.mode = Mode::BrowsingFiles;
                         }
-                        KeyCode::Char('x') | KeyCode::Delete => app.delete_link(),
+                        KeyCode::Char('d') | KeyCode::Delete => app.delete_link(),
                         _ => {}
                     }
                 }
@@ -223,7 +223,7 @@ fn ui(f: &mut Frame, app: &mut App) {
 
     // Header
     f.render_widget(
-        Paragraph::new(" CLIPPA-RS: REALTIME MANAGER ")
+        Paragraph::new("Manage Your Links")
             .block(
                 Block::default()
                     .borders(Borders::ALL)
@@ -286,8 +286,8 @@ fn ui(f: &mut Frame, app: &mut App) {
 
     // Footer
     let help = match app.mode {
-        Mode::BrowsingFiles => " [j/k] Move | [Enter] Open Domain | [q] Quit ",
-        Mode::BrowsingLinks => " [j/k] Move | [x] Delete Link | [Esc] Back ",
+        Mode::BrowsingFiles => " [j/k] [⬆/⬇] | [Enter] Open Domain | [q] Quit ",
+        Mode::BrowsingLinks => " [j/k] [⬆/⬇] | [d] Delete Link | [z] Back ",
     };
     f.render_widget(
         Paragraph::new(help)
