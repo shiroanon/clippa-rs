@@ -1,6 +1,6 @@
 # Maintainer: shiro shiroanony@gmail.com
 pkgname=clippa-rs
-pkgver=0.1.1
+pkgver=0.1.2
 pkgrel=1
 pkgdesc="A clipboard manager tui/service for wayland based compositors written in rust"
 arch=(x86_64 i686)
