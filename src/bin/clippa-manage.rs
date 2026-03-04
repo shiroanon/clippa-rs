@@ -132,8 +132,9 @@ impl App {
                                 if let Some(end) = lower.find("</title>") {
                                     if let Some(start) = lower[..end].rfind("<title>") {
                                         let title = buf[start + 7..end].trim().to_string();
-                                        if !title.is_empty() {
-                                            let _ = tx.send((url, title)).await;
+                                        let decoded_title = html_escape::decode_html_entities(&title).to_string();
+                                        if !decoded_title.is_empty() {
+                                            let _ = tx.send((url, decoded_title)).await;
                                         }
                                     }
                                     break;
