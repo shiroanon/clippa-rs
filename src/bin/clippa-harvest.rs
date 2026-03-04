@@ -38,7 +38,22 @@ fn get_archive_path(domain: &str) -> PathBuf {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut seen_urls = HashSet::new();
+    let mut seen_urls: HashSet<String> = HashSet::new();
+
+    // Pre-populate seen_urls from all existing archive files so we never
+    // re-store a URL that was already saved in a previous session.
+    let archive_dir = dirs::data_dir()
+        .map(|mut p| { p.push("clippa"); p })
+        .unwrap_or_default();
+    if let Ok(entries) = std::fs::read_dir(&archive_dir) {
+        for entry in entries.filter_map(|e| e.ok()) {
+            if let Ok(content) = std::fs::read_to_string(entry.path()) {
+                for line in content.lines().filter(|l| !l.is_empty()) {
+                    seen_urls.insert(line.to_string());
+                }
+            }
+        }
+    }
 
     // Patterns compiled once for the life of the process.
     let url_re = Regex::new(r"^https?://").unwrap();
